@@ -99,7 +99,7 @@ param <- list(  objective           = "multi:softmax",
                 booster             = "gbtree",
                 eval_metric         = "merror",
                 num_class           = 3,
-                eta                 = 1,
+                eta                 = 0.1,
                 max_depth           = 5,
                 subsample           = 0.6815,
                 colsample_bytree    = 0.701
@@ -108,7 +108,7 @@ param <- list(  objective           = "multi:softmax",
 clf1 <- xgboost(   params              = param, 
                   data                = dat1,
                   verbose             = 1,
-                  nrounds             = 5,
+                  nrounds             = 121,
                   nthread              = 8,
                   maximize            = FALSE
 )
@@ -132,7 +132,7 @@ dtest2 <- as.matrix(subSet1)
 
 clf2 <- xgboost(   params              = param, 
                    data                = dat2,
-                   nrounds             = 5, 
+                   nrounds             = 121, 
                    verbose             = 1,
                    nthread              = 8,
                    maximize            = FALSE
@@ -151,10 +151,10 @@ for(i in c(1:34176)){
 acc2<-1-(count/34176)
 #######################################################################################################################
 count <- 0
-t5<-c(preds2,preds1)
+t1<-c(preds2,preds1)
 for(i in c(1:68353)){
   
-  if(train.y[i]!=t5[i])
+  if(train.y[i]!=t1[i])
   {
     count<-count+1
   }
@@ -169,15 +169,21 @@ dtest <- as.matrix(xtest)
 
 clf <- xgboost(   params              = param, 
                     data                = dat,
-                    nrounds             = 5, 
+                    nrounds             = 121, 
                     verbose             = 1,
                     nthread              = 8,
                     maximize            = FALSE
 )
 
-predst5 <- predict(clf, dtest)
+predst1 <- predict(clf, dtest)
 ############################################################################################################################
-
+# Change the following parameters: eta , nrounds to get different models prediction for both train and test set
+#t1 and predst1 : eta=0.1 nrounds=121
+#t2 and predst2 : eta=0.15 nrounds=111
+#t3 and predst3 : eta=0.06 nrounds=211
+#t4 and predst4 : eta=0.3 nrounds=50
+#t5 and predst5 : eta=1 nrounds=5
+# Bind all output of training set to "tf" and test set to "predf"
 ###########################################################################################################################
 predf<-cbind(predst1,predst2,predst3,predst4,predst5)
 tf<-cbind(t1,t2,t3,t4,t5)
